@@ -1,0 +1,10 @@
+__pycache__
+.vscode
+venv
+web/data.js
+web/info.js
+web-lite
+diff.py
+creds.py
+heroku.py
+parse_old.py
