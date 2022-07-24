@@ -1,6 +1,29 @@
+import os
 import psycopg2
 from parse import *
-from creds import *
+
+# export $(cat .env | grep -v '#' | sed 's/\r$//' | awk '/=/ {print $1}' )
+
+DB_CREDS = {
+    'dbname': os.getenv('DB_NAME'),
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASSWORD'),
+    'host': os.getenv('DB_HOST'),
+}
+
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+
+SHORTLINK_TOKEN = os.getenv('SHORTLINK_TOKEN')
+
+
+def message(text: str) -> None:
+    print(text)
+    requests.get(f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage',
+        params={
+            'chat_id': 268094109,
+            'text': text
+        }
+    )
 
 
 def get_ids() -> list[int]:
@@ -37,7 +60,7 @@ def public_post(gift: Item) -> None:
         params={
             'chat_id': chat_id,
             'photo': gift.image,
-            'caption': f'{gift.name}\n{shortlink}',
+            'caption': f'${gift.price} {gift.name}\n{shortlink}',
         }
     )
     time.sleep(5)
@@ -45,12 +68,13 @@ def public_post(gift: Item) -> None:
 
 def handle_new_gifts(saved_ids: list[int], gifts: list[Item]) -> None:
     new = [gift for gift in gifts if gift.id not in saved_ids]
-    print(f'Found {len(new)} new gifts')
-
-    for gift in new:
-        public_post(gift)
+    message(f'Found {len(new)} new gifts')
 
     save_ids([gift.id for gift in gifts])
+
+    for gift in new:
+        if gift.category != "Women's Clothing":
+            public_post(gift)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
+import os
 import requests
 
-from creds import BOT_TOKEN
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 
 r = requests.get(f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage',
