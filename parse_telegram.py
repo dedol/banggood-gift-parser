@@ -30,7 +30,10 @@ def get_ids() -> list[int]:
     with psycopg2.connect(**DB_CREDS) as conn:
         with conn.cursor() as cursor:
             cursor.execute("SELECT ids FROM gifts")
-            return list(map(int, cursor.fetchone()[0].split(',')))
+            ids = cursor.fetchone()[0].split(',')
+            if ids == ['']: return [] # if empty
+            return list(map(int, ids))
+
 
 
 def save_ids(ids: list[int]) -> None:
